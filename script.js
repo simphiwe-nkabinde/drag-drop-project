@@ -35,6 +35,7 @@ function onDropHandler(event) {
     const data = event.dataTransfer.getData("text");
 
     let prevPos = getElementPosition(document.getElementById(data))
+    let oldParent = getParentElement(document.getElementById(data)).id
     let newPos = getGuidelinePosition();
 
     //if drag and drop is inside the same parent element
@@ -42,8 +43,17 @@ function onDropHandler(event) {
         if (newPos > prevPos) newPos-= 1;
         else prevPos -= 1
     }
-    console.log(`${data}: prevPos[${prevPos}], newPos[${newPos}], parent:${getParentElement(event.target).id}`);
-    // console.log('parent:', );
+    
+    // OUTPUT
+    const output = {
+        prevPos,
+        newPos,
+        newParent: getParentElement(event.target).id,
+        oldParent
+    }
+    console.log(output);
+
+
     removeFocusBorder(event.target.parentElement, 'redDashedBorder');
 
     if (!event.target.children.length && !event.target.innerText) {
