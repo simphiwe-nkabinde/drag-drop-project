@@ -1,5 +1,5 @@
 # drag-drop-project
-implements drag and drop features using the Drag and Drop web Api
+Enables drag and drop functionality with visual guidelines on a web page.
 
 The program outputs the following:
 - the dragged item's old postion
