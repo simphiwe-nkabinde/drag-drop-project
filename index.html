@@ -10,35 +10,36 @@
     <section class="row">
         <div class="col border mx-1" id="todo-container">
             <h5>To-do</h5>
-            <ul id="todo-ul" ondragenter="onDragEnterHandler(event)" ondragleave="onDragLeaveHandler(event)" ondragover="onDragOverHandler(event)" ondrop="onDropHandler(event)" class="list-unstyled p-2 border small">
-                <li ondragstart="onDragStartHandler(event)" id="item1" ondragend="onDragEndHandler(event)" draggable="true" class="alert-primary p-2 my-1">
-                    Item 1
-                </li>
-                <li ondragstart="onDragStartHandler(event)" id="item2" ondragend="onDragEndHandler(event)" draggable="true" class="alert-primary p-2 my-1">
-                    Item 2
-                </li>
-                <li id="todo-li" class="p-2 border">
-                    nested list
-                    <ul id="todo-nested-ul" class="list-unstyled p-2 alert-warning small">
-                        <li ondragstart="onDragStartHandler(event)" id="item3" ondragend="onDragEndHandler(event)" draggable="true" class="alert-primary p-2 my-1">
-                            Item 3
-                        </li>
+            <ul id="todo-ul" class="list-unstyled p-2 border border-info small">
+                <li id="item1" class="alert-primary p-2 my-1" data-void="true">Item 1</li>
+                <li id="item2" class="alert-success p-2 my-1" data-void="true">Item 2</li>
+                <li id="todo-li" class="p-2 border border-warning">
+                    <h5>nested list</h5>
+                    <ul id="todo-nested-ul" class="list-unstyled p-2 alert-primary small">
+                        <li id="item3" class="alert-warning p-2 my-1" data-void="true">Item 3</li>
                     </ul>
                 </li>
             </ul>
         </div>
         <div class="col border mx-1">
             <h5>Done</h5>
-            <ul id="done-ul" ondragenter="onDragEnterHandler(event)" ondragleave="onDragLeaveHandler(event)" ondragover="onDragOverHandler(event)" ondrop="onDropHandler(event)" class="list-unstyled p-2 border">
-                <li ondragstart="onDragStartHandler(event)" id="item4" ondragend="onDragEndHandler(event)" draggable="true" class="alert-primary p-2 my-1">
-                    Item 4
-                </li>
+            <ul id="done-ul" class="list-unstyled p-2 border">
+                <li id="item4" class="alert-secondary p-2 my-1" data-void="true">Item 4</li>
             </ul>
         </div>
     </section>
-    <div id="guideline"></div>
 
-    <script src="script.js"></script>
+    <script src="./dragdrop.module.js"></script>
+    <script>
+        const listItems = document.getElementsByTagName('li')
+        for (const li of listItems) {
+            makeDraggable(li)
+        }
+        const ulElements = document.getElementsByTagName('ul')
+        for (const ul of ulElements) {
+            makeDropTarget(ul)
+        }
+    </script>
 </body>
 
 </html>

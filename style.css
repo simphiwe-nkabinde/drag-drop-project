@@ -4,17 +4,9 @@
     padding: 10px;
     border: 1px solid #aaaaaa;
 }
-.redDashedBorder {
+.focusBorder {
     border: 1px dashed red !important;
 }
-.blueDashedBorder {
-    border: 1px dashed blue !important;
-}
-#guideline {
-    margin: 2px auto;
-    border: 1px solid #c80cce;
-}
-
 .muted {
     opacity: .4;
 }
