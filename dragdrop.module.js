@@ -1,30 +1,34 @@
+"use strict";
+
 const GUIDELINE = document.createElement('div');
-GUIDELINE.id = 'guideline';
+GUIDELINE.id = 'drop_target_guideline';
 GUIDELINE.style.margin = '2px auto';
 GUIDELINE.style.border = '1px solid #c80cce';
 
-function showPlacementGuides(event) {
+/**
+ * displays a guideline adjascent the nearest element to the user's cursor and a border around the containing element.
+ * @param {Event} event drag event
+ */
+function showDropTargetGuides(event) {
     const target = event.target
-    if (target.id == 'guideline') return
+    if (target.id == 'drop_target_guideline') return
     const workingElement = isVoidElement(target) ? target.parentElement : target;
 
-    // workingElement.append(GUIDELINE)
-    addFocusBorder(workingElement, 'focusBorder')
+    addFocusBorder(workingElement)
 
-    const childCount = workingElement.children.length
-    if (!childCount) {
+    const childrenLength = workingElement.children.length
+    if (!childrenLength) {
         workingElement.append(GUIDELINE)
-    }
-    else {
+    } else {
         let minClientChildDistanceY = 2000;
         let nearestChild;
         let adjascentPosition = 'afterend';
         const {clientY} = event
         //find nearest child to cursor position (Y-axis)
-        for (let i = 0; i < childCount; i++) {
+        for (let i = 0; i < childrenLength; i++) {
             const child = workingElement.children[i];
 
-            //child position
+            //child position & dimensions
             const rect = child.getBoundingClientRect();
             const childTop = rect.top;
             const childBottom = rect.bottom;
@@ -32,7 +36,6 @@ function showPlacementGuides(event) {
 
             const clientChildDistanceY = Math.sqrt((clientY - childTop)**2)    //calc difference and return positive number
 
-            //top half or bottom half of child
             if (clientChildDistanceY < minClientChildDistanceY) {
                 minClientChildDistanceY = clientChildDistanceY;
                 nearestChild = child;
@@ -41,15 +44,16 @@ function showPlacementGuides(event) {
                 else adjascentPosition = 'beforebegin'
             }
         }
+        // add guideline
         nearestChild.insertAdjacentElement(adjascentPosition, GUIDELINE);
     }
 }
 
-function removePlacementGuides(event) {
+function hideDropTargetGuides(event) {
     const target = event.target
-    if (target.id == 'guideline') return
+    if (target.id == 'drop_target_guideline') return
     const workingElement = isVoidElement(target) ? target.parentElement : target;
-    removeFocusBorder(workingElement, 'focusBorder'); 
+    removeFocusBorder(workingElement); 
 }
 function muteElement(element) {
     element.style.opacity = '0.4';
@@ -57,18 +61,19 @@ function muteElement(element) {
 function unmuteElement(element) {
     element.style.opacity = '1';
 }
-function addFocusBorder(element, borderClassName) {
-    if (element.id == 'guideline') return
+function addFocusBorder(element) {
+    if (element.id == 'drop_target_guideline') return
     element.style.border = '1px dashed red'
 }
-function removeFocusBorder(element, borderClassName) {
+function removeFocusBorder(element) {
     element.style.border = 'inherit'
 }
 
 /**
- * returns true if an HTML element is void (cannot have any child nodes)
- * @param {Element} element tag name of element
- * @return {Boolean}
+ * returns true if an HTML element is void or has been set to void.
+ * an element can be set to void by setting its data-void attribute to "true"
+ * @param {Element} element element to check if void
+ * @return {Boolean} true if void, false if not
  */
  function isVoidElement(element) {
     const voidElements = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 
@@ -79,29 +84,47 @@ function removeFocusBorder(element, borderClassName) {
     return false
   }
 
-
+/**
+ * makes element draggable & adds relevant drag event handlers to it.
+ * @param {Element} element element with unique id value.
+ */
 function makeDraggable(element) {
+    //error handling
+    if (!(element instanceof Element)) throw new TypeError(`${typeof element} '${element}' is not a DOM Element`);
+    if (!element.id) throw new TypeError(`${element.tagName} Element cannot be made draggable without an id value. All draggable Elements must have a unique id value.`);
+
     element.draggable = true
     element.ondragstart = (event) => {
         event.dataTransfer.setData("text", event.target.id);
-        muteElement(event.target)
+        muteElement(event.target);
     }
     element.ondragend = (event) => {
         unmuteElement(event.target)
     }
 }
-function makeDropZone(element) {
-    element.ondragover = (event) => {
+/**
+ * adds relevant drag event handlers to drop zone container.
+ * @param {Element} container container wherein dragged elements can be dropped.
+ */
+function makeDropZone(container) {
+    //error handling
+    if (!(container instanceof Element)) throw new TypeError(`${typeof container} '${container}' is not a DOM Element`);
+
+    container.ondragover = (event) => {
         event.preventDefault();
-        showPlacementGuides(event);
+        showDropTargetGuides(event);
     }
-    element.ondragleave = (event) => {
-        removePlacementGuides(event);
+    container.ondragleave = (event) => {
+        hideDropTargetGuides(event);
     }
-    element.ondrop = (event) => {
-        const draggedElement = document.getElementById(event.dataTransfer.getData('text'));
-        GUIDELINE.insertAdjacentElement('afterend', draggedElement);
+    container.ondrop = (event) => {
+        const elementId = event.dataTransfer.getData('text')
+        const droppedElement = document.getElementById(elementId);
+
+        //replace guideline with dropped element
+        GUIDELINE.insertAdjacentElement('afterend', droppedElement);
         GUIDELINE.remove();
-        removePlacementGuides(event);
+
+        hideDropTargetGuides(event);
     }
 }
