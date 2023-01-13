@@ -1,4 +1,3 @@
-// PLACEMENT GUIDES
 const GUIDELINE = document.createElement('div');
 GUIDELINE.id = 'guideline';
 GUIDELINE.style.margin = '2px auto';
@@ -52,21 +51,18 @@ function removePlacementGuides(event) {
     const workingElement = isVoidElement(target) ? target.parentElement : target;
     removeFocusBorder(workingElement, 'focusBorder'); 
 }
-
-// MUTE
 function muteElement(element) {
-    element.classList.add('muted');
+    element.style.opacity = '0.4';
 }
 function unmuteElement(element) {
-    element.classList.remove('muted');
+    element.style.opacity = '1';
 }
-// BORDERS
 function addFocusBorder(element, borderClassName) {
     if (element.id == 'guideline') return
-    element.classList.add(borderClassName)
+    element.style.border = '1px dashed red'
 }
 function removeFocusBorder(element, borderClassName) {
-    element.classList.remove(borderClassName)
+    element.style.border = 'inherit'
 }
 
 /**
@@ -94,7 +90,7 @@ function makeDraggable(element) {
         unmuteElement(event.target)
     }
 }
-function makeDropTarget(element) {
+function makeDropZone(element) {
     element.ondragover = (event) => {
         event.preventDefault();
         showPlacementGuides(event);
