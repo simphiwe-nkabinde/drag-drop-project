@@ -144,7 +144,7 @@ function makeDropZone(container, options = {guidelineColor: '#c80cce', focusbord
     }
 }
 
-export {
-    makeDraggable,
-    makeDropZone
-}
+// export {
+//     makeDraggable,
+//     makeDropZone
+// }
