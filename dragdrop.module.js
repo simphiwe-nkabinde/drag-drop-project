@@ -116,11 +116,27 @@ function makeDraggable(element) {
 }
 
 /**
+ * returns the previous and the new parent & position of dragged element
+ * @param {Element} droppedElement droppedElement in the previous position
+ * @param {Element} guideline guideline element in the new position
+ * @returns {{prevParent:string, prevPosition:number, newParent:string, newPosition:number}} previous and new parent & postion of dragged element
+ */
+ function getOperationData(droppedElement, guideline) {
+    return {
+        prevParent: droppedElement.parentElement.id ? droppedElement.parentElement.id : 'element id null',
+        prevPosition: Array.prototype.indexOf.call(droppedElement.parentElement.children, droppedElement),
+        newParent: guideline.parentElement.id ? guideline.parentElement.id : 'element id null',
+        newPosition: Array.prototype.indexOf.call(guideline.parentElement.children, guideline)
+    }
+}
+
+/**
  * adds relevant drag event handlers to drop zone container.
  * @param {Element} container container wherein dragged elements can be dropped.
+ * @param {function({prevParent:string, prevPosition:number, newParent:string, newPosition:number})} handleDataCallback callback to handle dragdrop operation data.
  * @param {{guidelineColor: string, focusborderColor: string } | undefined} options css color values
  */
-function makeDropZone(container, options = {guidelineColor: '#c80cce', focusborderColor: 'red'}) {
+function makeDropZone(container, handleDataCallback = function(data){}, options = {guidelineColor: '#c80cce', focusborderColor: 'red'}) {
     //error handling
     if (!(container instanceof Element)) throw new TypeError(`${typeof container} '${container}' is not a DOM Element`);
 
@@ -135,6 +151,12 @@ function makeDropZone(container, options = {guidelineColor: '#c80cce', focusbord
     container.ondrop = (event) => {
         const elementId = event.dataTransfer.getData('text')
         const droppedElement = document.getElementById(elementId);
+
+        const dragDropData = getOperationData(droppedElement, GUIDELINE);
+
+        //callback
+        if (typeof handleDataCallback == 'function') handleDataCallback(dragDropData);
+        else throw new TypeError(`${typeof handleDataCallback} '${handleDataCallback}' is not a function`);
 
         //replace guideline with dropped element
         GUIDELINE.insertAdjacentElement('afterend', droppedElement);
