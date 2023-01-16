@@ -3,18 +3,24 @@
 const GUIDELINE = document.createElement('div');
 GUIDELINE.id = 'drop_target_guideline';
 GUIDELINE.style.margin = '2px auto';
-GUIDELINE.style.border = '1px solid #c80cce';
+GUIDELINE.style.border = '1px solid';
 
 /**
  * displays a guideline adjascent the nearest element to the user's cursor and a border around the containing element.
  * @param {Event} event drag event
+ * @param {string} guidelineColor guideline css color value
+ * @param {string} focusborderColor focus border css color value
  */
-function showDropTargetGuides(event) {
+function showDropTargetGuides(event, guidelineColor, focusborderColor) {
     const target = event.target
     if (target.id == 'drop_target_guideline') return
+
+    //styling
+    GUIDELINE.style.setProperty('border-color', guidelineColor)
+
     const workingElement = isVoidElement(target) ? target.parentElement : target;
 
-    addFocusBorder(workingElement)
+    addFocusBorder(workingElement, focusborderColor);
 
     const childrenLength = workingElement.children.length
     if (!childrenLength) {
@@ -61,12 +67,18 @@ function muteElement(element) {
 function unmuteElement(element) {
     element.style.opacity = '1';
 }
-function addFocusBorder(element) {
+
+/**
+ * set the border for an element
+ * @param {*} element element on which to set a border
+ * @param {string} color focus border css color value
+ */
+function addFocusBorder(element, color) {
     if (element.id == 'drop_target_guideline') return
-    element.style.border = '1px dashed red'
+    element.style.setProperty('border', `1px dashed ${color}`, 'important')
 }
 function removeFocusBorder(element) {
-    element.style.border = 'inherit'
+    element.style.setProperty('border', 'inherit');
 }
 
 /**
@@ -102,17 +114,20 @@ function makeDraggable(element) {
         unmuteElement(event.target)
     }
 }
+
 /**
  * adds relevant drag event handlers to drop zone container.
  * @param {Element} container container wherein dragged elements can be dropped.
+ * @param {{guidelineColor: string, focusborderColor: string } | undefined} options css color values
  */
-function makeDropZone(container) {
+function makeDropZone(container, options = {guidelineColor: '#c80cce', focusborderColor: 'red'}) {
     //error handling
     if (!(container instanceof Element)) throw new TypeError(`${typeof container} '${container}' is not a DOM Element`);
 
     container.ondragover = (event) => {
         event.preventDefault();
-        showDropTargetGuides(event);
+        const { guidelineColor, focusborderColor } = options;
+        showDropTargetGuides(event, guidelineColor, focusborderColor);
     }
     container.ondragleave = (event) => {
         hideDropTargetGuides(event);
@@ -127,4 +142,9 @@ function makeDropZone(container) {
 
         hideDropTargetGuides(event);
     }
+}
+
+export {
+    makeDraggable,
+    makeDropZone
 }
