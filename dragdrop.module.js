@@ -2,7 +2,7 @@
 
 const GUIDELINE = document.createElement('div');
 GUIDELINE.id = 'drop_target_guideline';
-GUIDELINE.style.margin = '2px auto';
+GUIDELINE.style.margin = '2px 10px';
 GUIDELINE.style.border = '1px solid';
 
 /**
@@ -70,15 +70,15 @@ function unmuteElement(element) {
 
 /**
  * set the border for an element
- * @param {*} element element on which to set a border
+ * @param {Element} element element on which to set a border
  * @param {string} color focus border css color value
  */
 function addFocusBorder(element, color) {
     if (element.id == 'drop_target_guideline') return
-    element.style.setProperty('border', `1px dashed ${color}`, 'important')
+    element.style.setProperty('box-shadow', `0 0 0.05rem 0.11rem rgb(45 129 194)`, 'important')
 }
 function removeFocusBorder(element) {
-    element.style.setProperty('border', 'inherit');
+    element.style.setProperty('box-shadow', 'inherit');
 }
 
 /**
@@ -123,6 +123,7 @@ function makeDraggable(element) {
  */
  function getOperationData(droppedElement, guideline) {
     return {
+        element: droppedElement.id,
         prevParent: droppedElement.parentElement.id ? droppedElement.parentElement.id : 'element id null',
         prevPosition: Array.prototype.indexOf.call(droppedElement.parentElement.children, droppedElement),
         newParent: guideline.parentElement.id ? guideline.parentElement.id : 'element id null',
